@@ -64,6 +64,6 @@
     "lodash.foreach": "^4.2.0",
     "lodash.reduce": "^4.3.0",
     "request": "^2.72.0",
-    "verror": "^1.6.1"
+    "verror": "^1.10.0"
   }
 }
