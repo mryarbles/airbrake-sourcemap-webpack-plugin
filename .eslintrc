@@ -1,8 +1,5 @@
 {
-  "extends": "airbnb-base",
-  "env": {
-    "mocha": true
-  },
+  // "extends": "airbnb-base",
   "parserOptions": {
     "ecmaFeatures": {
       "restParams": true,
@@ -19,7 +16,7 @@
   },
   "globals": {
     // Constants defined in examples webpack.config
-    "__ROLLBAR_ACCESS_TOKEN__": true,
-    "__GIT_REVISION__": true
+    // "__ROLLBAR_ACCESS_TOKEN__": true,
+    // "__GIT_REVISION__": true
   }
 }

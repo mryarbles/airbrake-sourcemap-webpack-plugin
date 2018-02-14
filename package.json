@@ -34,6 +34,7 @@
     "production"
   ],
   "author": "Brandon Doran <bdoran@gmail.com>",
+  "contributors": ["Luke Grannis <mryarbles@gmail.com"],
   "bugs": {
     "url": "https://github.com/mryarbles/airbrake-sourcemap-webpack-plugin/issues"
   },

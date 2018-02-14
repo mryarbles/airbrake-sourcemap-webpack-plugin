@@ -7,116 +7,117 @@ import { handleError, validateOptions } from './helpers';
 import { ENDPOINT } from './constants';
 
 class UploadSourceMapPlugin {
-  constructor({
-    accessToken,
-    version,
-    publicPath,
-    includeChunks = [],
-    silent = false,
-    ignoreErrors = false
-  }) {
-    this.accessToken = accessToken;
-    this.version = version;
-    this.publicPath = publicPath;
-    this.includeChunks = [].concat(includeChunks);
-    this.silent = silent;
-    this.ignoreErrors = ignoreErrors;
-  }
-
-  afterEmit(compilation, cb) {
-    const errors = validateOptions(this);
-
-    if (errors) {
-      compilation.errors.push(...handleError(errors));
-      return cb();
+    constructor({
+                    apiKey,
+                    projectId,
+                    publicPath,
+                    silent = false,
+                    ignoreErrors = false
+                }) {
+        this.apiKey = apiKey;
+        this.publicPath = publicPath;
+        this.projectId = projectId;
+        // this.includeChunks = [].concat(includeChunks);
+        this.silent = silent;
+        this.ignoreErrors = ignoreErrors;
     }
 
-    this.uploadSourceMaps(compilation, (err) => {
-      if (err) {
-        if (!this.ignoreErrors) {
-          compilation.errors.push(...handleError(err));
-        } else if (!this.silent) {
-          compilation.warnings.push(...handleError(err));
+    afterEmit(compilation, cb) {
+        const errors = validateOptions(this);
+
+        if (errors) {
+            compilation.errors.push(...handleError(errors));
+            return cb();
         }
-      }
-      cb();
-    });
-  }
 
-  apply(compiler) {
-    compiler.plugin('after-emit', this.afterEmit.bind(this));
-  }
+        this.uploadSourceMaps(compilation, (err) => {
+            if (err) {
+                if (!this.ignoreErrors) {
+                    compilation.errors.push(...handleError(err));
+                } else if (!this.silent) {
+                    compilation.warnings.push(...handleError(err));
+                }
+            }
+            cb();
+        });
+    }
 
-  getAssets(compilation) {
-    const { includeChunks } = this;
-    const { chunks } = compilation.getStats().toJson();
+    apply(compiler) {
+        compiler.plugin('after-emit', this.afterEmit.bind(this));
+    }
 
-    return reduce(chunks, (result, chunk) => {
-      const chunkName = chunk.names[0];
-      if (includeChunks.length && includeChunks.indexOf(chunkName) === -1) {
-        return result;
-      }
+    getAssets(compilation) {
+        const { includeChunks } = this;
+        const { chunks } = compilation.getStats().toJson();
 
-      const sourceFile = find(chunk.files, file => /\.js$/.test(file));
-      const sourceMap = find(chunk.files, file => /\.js\.map$/.test(file));
+        return reduce(chunks, (result, chunk) => {
+            const chunkName = chunk.names[0];
+            if (includeChunks.length && includeChunks.indexOf(chunkName) === -1) {
+                return result;
+            }
 
-      if (!sourceFile || !sourceMap) {
-        return result;
-      }
+            const sourceFile = find(chunk.files, file => /\.js$/.test(file));
+            const sourceMap = find(chunk.files, file => /\.js\.map$/.test(file));
 
-      return [
-        ...result,
-        { sourceFile, sourceMap }
-      ];
-    }, {});
-  }
+            if (!sourceFile || !sourceMap) {
+                return result;
+            }
 
-  uploadSourceMap(compilation, { sourceFile, sourceMap }, cb) {
+            return [
+                ...result,
+                { sourceFile, sourceMap }
+            ];
+        }, {});
+    }
 
-      const url = ENDPOINT.replace('[id]', this.projectId);
+    uploadSourceMap(compilation, { sourceFile, sourceMap }, cb) {
 
-      const req = request
-          .post(url, (err, res, body) => {
-              if (!err && res.statusCode === 200) {
-                  if (!this.silent) {
-                      console.info(`Uploaded ${sourceMap} `); // eslint-disable-line no-console
-                  }
-                  return cb();
-              }
+        const url = ENDPOINT.replace('[id]', this.projectId);
 
-              const errMessage = `failed to upload ${sourceMap}`;
-              if (err) {
-                  return cb(new VError(err, errMessage));
-              }
+        console.log('UploadSourceMapPlugin to:', url);
 
-              try {
-                  const { message } = JSON.parse(body);
-                  return cb(new Error(message ? `${errMessage}: ${message}` : errMessage));
-              } catch (parseErr) {
-                  return cb(new VError(parseErr, errMessage));
-              }
-          })
-          .auth(null, null, true, this.apiKey);
+        const req = request
+            .post(url, (err, res, body) => {
+                if (!err && res.statusCode === 200) {
+                    if (!this.silent) {
+                        console.info(`Uploaded ${sourceMap} `); // eslint-disable-line no-console
+                    }
+                    return cb();
+                }
+
+                const errMessage = `failed to upload ${sourceMap}`;
+                if (err) {
+                    return cb(new VError(err, errMessage));
+                }
+
+                try {
+                    const { message } = JSON.parse(body);
+                    return cb(new Error(message ? `${errMessage}: ${message}` : errMessage));
+                } catch (parseErr) {
+                    return cb(new VError(parseErr, errMessage));
+                }
+            })
+            .auth(null, null, true, this.apiKey);
 
 
-    const form = req.form();
-    // form.append('access_token', this.accessToken);
-    // form.append('version', this.version);
-    form.append('name', `${this.publicPath}/${sourceFile}`);
-    form.append('file', compilation.assets[sourceMap].source());
-  }
+        const form = req.form();
+        // form.append('access_token', this.accessToken);
+        // form.append('version', this.version);
+        form.append('name', `${this.publicPath}/${sourceFile}`);
+        form.append('file', compilation.assets[sourceMap].source());
+    }
 
-  uploadSourceMaps(compilation, cb) {
-    const assets = this.getAssets(compilation);
-    const upload = this.uploadSourceMap.bind(this, compilation);
+    uploadSourceMaps(compilation, cb) {
+        const assets = this.getAssets(compilation);
+        const upload = this.uploadSourceMap.bind(this, compilation);
 
-    async.each(assets, upload, (err, results) => {
-      if (err) {
-        return cb(err);
-      }
-      return cb(null, results);
-    });
-  }
+        async.each(assets, upload, (err, results) => {
+            if (err) {
+                return cb(err);
+            }
+            return cb(null, results);
+        });
+    }
 }
 
 module.exports = UploadSourceMapPlugin;
