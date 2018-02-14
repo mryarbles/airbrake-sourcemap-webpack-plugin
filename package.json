@@ -1,7 +1,7 @@
 {
   "name": "rollbar-sourcemap-webpack-plugin",
   "version": "2.2.0",
-  "description": "A Webpack plugin to upload sourcemaps to Rollbar after build",
+  "description": "A Webpack plugin to upload sourcemaps to Airbrake after build",
   "main": "./dist/UploadSourceMapPlugin.js",
   "scripts": {
     "clean": "rimraf dist && rimraf coverage.lcov",
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thredup/rollbar-sourcemap-webpack-plugin.git"
+    "url": "https://github.com/mryarbles/airbrake-sourcemap-webpack-plugin.git"
   },
   "keywords": [
     "webpack",
@@ -35,9 +35,9 @@
   ],
   "author": "Brandon Doran <bdoran@gmail.com>",
   "bugs": {
-    "url": "https://github.com/thredup/rollbar-sourcemap-webpack-plugin/issues"
+    "url": "https://github.com/mryarbles/airbrake-sourcemap-webpack-plugin/issues"
   },
-  "homepage": "https://github.com/thredup/rollbar-sourcemap-webpack-plugin#readme",
+  "homepage": "https://github.com/mryarbles/airbrake-sourcemap-webpack-plugin#readme",
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.16.0",
