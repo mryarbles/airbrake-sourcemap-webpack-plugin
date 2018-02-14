@@ -1,6 +1,6 @@
 {
   "name": "airbrake-sourcemap-webpack-plugin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Webpack plugin to upload sourcemaps to Airbrake after build",
   "main": "./dist/UploadSourceMapPlugin.js",
   "scripts": {
