@@ -11,6 +11,8 @@ THIS IS NOT WORKING YET
 
 ln -s pre-commit.sh .git/hooks/pre-commit
 
+
+
 Based on RollbarSourceMapPlugin
 
 This is a [Webpack](https://webpack.github.io) plugin that simplifies uploading the sourcemaps,
