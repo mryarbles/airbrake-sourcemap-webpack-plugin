@@ -4,9 +4,9 @@ import VError from 'verror';
 import find from 'lodash.find';
 import reduce from 'lodash.reduce';
 import { handleError, validateOptions } from './helpers';
-import { ROLLBAR_ENDPOINT } from './constants';
+import { ENDPOINT } from './constants';
 
-class RollbarSourceMapPlugin {
+class UploadSourceMapPlugin {
   constructor({
     accessToken,
     version,
@@ -72,35 +72,38 @@ class RollbarSourceMapPlugin {
   }
 
   uploadSourceMap(compilation, { sourceFile, sourceMap }, cb) {
-    const req = request.post(ROLLBAR_ENDPOINT, (err, res, body) => {
-      if (!err && res.statusCode === 200) {
-        if (!this.silent) {
-          console.info(`Uploaded ${sourceMap} to Rollbar`); // eslint-disable-line no-console
-        }
-        return cb();
-      }
 
-      const errMessage = `failed to upload ${sourceMap} to Rollbar`;
-      if (err) {
-        return cb(new VError(err, errMessage));
-      }
+      const url = ENDPOINT.replace('[id]', this.projectId);
 
-      try {
-        const { message } = JSON.parse(body);
-        return cb(new Error(message ? `${errMessage}: ${message}` : errMessage));
-      } catch (parseErr) {
-        return cb(new VError(parseErr, errMessage));
-      }
-    });
+      const req = request
+          .post(url, (err, res, body) => {
+              if (!err && res.statusCode === 200) {
+                  if (!this.silent) {
+                      console.info(`Uploaded ${sourceMap} `); // eslint-disable-line no-console
+                  }
+                  return cb();
+              }
+
+              const errMessage = `failed to upload ${sourceMap}`;
+              if (err) {
+                  return cb(new VError(err, errMessage));
+              }
+
+              try {
+                  const { message } = JSON.parse(body);
+                  return cb(new Error(message ? `${errMessage}: ${message}` : errMessage));
+              } catch (parseErr) {
+                  return cb(new VError(parseErr, errMessage));
+              }
+          })
+          .auth(null, null, true, this.apiKey);
+
 
     const form = req.form();
-    form.append('access_token', this.accessToken);
-    form.append('version', this.version);
-    form.append('minified_url', `${this.publicPath}/${sourceFile}`);
-    form.append('source_map', compilation.assets[sourceMap].source(), {
-      filename: sourceMap,
-      contentType: 'application/json'
-    });
+    // form.append('access_token', this.accessToken);
+    // form.append('version', this.version);
+    form.append('name', `${this.publicPath}/${sourceFile}`);
+    form.append('file', compilation.assets[sourceMap].source());
   }
 
   uploadSourceMaps(compilation, cb) {
@@ -116,4 +119,4 @@ class RollbarSourceMapPlugin {
   }
 }
 
-module.exports = RollbarSourceMapPlugin;
+module.exports = UploadSourceMapPlugin;

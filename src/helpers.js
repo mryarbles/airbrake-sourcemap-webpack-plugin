@@ -1,9 +1,9 @@
 import VError from 'verror';
-import { ROLLBAR_REQ_FIELDS } from './constants';
+import { REQUIRED_FIELDS } from './constants';
 
 // Take a single Error or array of Errors and return an array of errors that
 // have message prefixed.
-export function handleError(err, prefix = 'RollbarSourceMapPlugin') {
+export function handleError(err, prefix = 'UploadSourceMapPlugin') {
   if (!err) {
     return [];
   }

@@ -1,6 +1,6 @@
 import expect, { isSpy, spyOn, createSpy } from 'expect';
 import nock from 'nock';
-import RollbarSourceMapPlugin from '../src/RollbarSourceMapPlugin';
+import RollbarSourceMapPlugin from '../src/UploadSourceMapPlugin';
 
 describe('RollbarSourceMapPlugin', function() {
   beforeEach(function() {

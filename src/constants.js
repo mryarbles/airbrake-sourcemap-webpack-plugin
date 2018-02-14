@@ -1,7 +1,7 @@
-export const ROLLBAR_ENDPOINT = 'https://api.rollbar.com/api/1/sourcemap';
+export const ENDPOINT = 'https://airbrake.io/api/v4/projects/[id]/sourcemaps';
 
-export const ROLLBAR_REQ_FIELDS = [
-  'accessToken',
-  'version',
-  'publicPath'
+export const REQUIRED_FIELDS = [
+    'projectId',
+    'apiKey',
+    'publicPath'
 ];
