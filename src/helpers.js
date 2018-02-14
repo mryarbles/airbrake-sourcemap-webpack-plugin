@@ -15,7 +15,7 @@ export function handleError(err, prefix = 'UploadSourceMapPlugin') {
 // Validate required options and return an array of errors or null if there
 // are no errors.
 export function validateOptions(ref) {
-  const errors = ROLLBAR_REQ_FIELDS.reduce((result, field) => {
+  const errors = REQUIRED_FIELDS.reduce((result, field) => {
     if (ref && ref[field]) {
       return result;
     }
