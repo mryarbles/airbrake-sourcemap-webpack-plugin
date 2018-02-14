@@ -1,5 +1,5 @@
 import expect from 'expect';
-import { ROLLBAR_REQ_FIELDS } from '../src/constants';
+import {REQUIRED_FIELDS } from '../src/constants';
 import * as helpers from '../src/helpers';
 
 describe('helpers', function() {
