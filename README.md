@@ -11,7 +11,7 @@ THIS IS NOT WORKING YET
 
 ln -s pre-commit.sh .git/hooks/pre-commit
 
-
+Why you no work?
 
 Based on RollbarSourceMapPlugin
 
